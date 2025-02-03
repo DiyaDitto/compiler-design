@@ -1,0 +1,95 @@
+
+
+3 of 71
+(no subject)
+Inbox
+
+ANNA JAISON
+ 
+AttachmentsJan 30, 2025, 11:52 AM (4 days ago)
+
+C 25 Diya Ditto
+---------- Forwarded message --------- From: ANNA JAISON <chn22csc359@ceconline.edu> Date: Thu, Jan 30, 2025 at 11:52 AM Subject: To: LIYA SARA <chn22csc409@cec
+AttachmentsJan 30, 2025, 11:51 AM (4 days ago)
+
+C 25 Diya Ditto
+---------- Forwarded message --------- From: C 25 Diya Ditto <chn22csc079@ceconline.edu> Date: Thu, Jan 30, 2025 at 11:51 AM Subject: Fwd: To: Liya Sara thomas
+AttachmentsFeb 1, 2025, 7:20 PM (2 days ago)
+
+C 25 Diya Ditto <chn22csc079@ceconline.edu>
+Attachments
+7:20 PM (1 hour ago)
+to C
+
+
+ 2 Attachments
+  •  Scanned by Gmail
+// udp client driver program 
+#include <stdio.h> 
+#include <strings.h> 
+#include <sys/types.h> 
+#include <arpa/inet.h> 
+#include <sys/socket.h> 
+#include<netinet/in.h> 
+#include<unistd.h> 
+#include<stdlib.h> 
+#include <string.h>
+
+
+#define PORT 5000 
+#define MAXLINE 1000 
+
+// Driver code 
+int main() 
+{ 
+	char buff[100];
+	int sockfd, n; 
+	struct sockaddr_in servaddr; 
+	
+	// clear servaddr 
+	bzero(&servaddr, sizeof(servaddr)); 
+	servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+	servaddr.sin_port = htons(PORT); 
+	servaddr.sin_family = AF_INET; 
+	
+	// create datagram socket 
+	sockfd = socket(AF_INET, SOCK_DGRAM, 0); 
+	
+	// connect to server 
+	if(connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
+	{ 
+		printf("\n Error : Connect Failed \n"); 
+		exit(0); 
+	} 
+	
+	printf("Client Started...\n");
+	
+	for(;;){
+		bzero(buff, sizeof(buff));
+        	printf("Enter the message : ");
+        	n = 0;
+        
+        	while ((buff[n++] = getchar()) != '\n');
+	
+		// request to send datagram 
+		// no need to specify server address in sendto 
+		// connect stores the peers IP and port 
+		sendto(sockfd, buff, MAXLINE, 0, (struct sockaddr*)NULL, sizeof(servaddr)); 
+		if ((strncmp(buff, "exit", 4)) == 0) {
+            		printf("Client Exit...\n");
+            		break;
+        	}
+		bzero(buff, sizeof(buff));
+
+		// waiting for response 
+		recvfrom(sockfd, buff, sizeof(buff), 0, (struct sockaddr*)NULL, NULL); 
+		printf("From Server : %s", buff);
+		if ((strncmp(buff, "exit", 4)) == 0) {
+            		printf("Client Exit...\n");
+            		break;
+        	}
+	}
+
+	// close the descriptor 
+	close(sockfd); 
+} 
