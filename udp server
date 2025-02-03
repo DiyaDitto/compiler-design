@@ -1,0 +1,80 @@
+
+
+3 of 71
+(no subject)
+Inbox
+
+ANNA JAISON
+ 
+AttachmentsJan 30, 2025, 11:52 AM (4 days ago)
+
+C 25 Diya Ditto
+---------- Forwarded message --------- From: ANNA JAISON <chn22csc359@ceconline.edu> Date: Thu, Jan 30, 2025 at 11:52 AM Subject: To: LIYA SARA <chn22csc409@cec
+AttachmentsJan 30, 2025, 11:51 AM (4 days ago)
+
+C 25 Diya Ditto
+---------- Forwarded message --------- From: C 25 Diya Ditto <chn22csc079@ceconline.edu> Date: Thu, Jan 30, 2025 at 11:51 AM Subject: Fwd: To: Liya Sara thomas
+AttachmentsFeb 1, 2025, 7:20 PM (2 days ago)
+
+C 25 Diya Ditto <chn22csc079@ceconline.edu>
+Attachments
+7:20 PM (1 hour ago)
+to C
+
+
+ 2 Attachments
+  •  Scanned by Gmail
+// server program for udp connection 
+#include <stdio.h> 
+#include <string.h>
+#include <strings.h> 
+#include <sys/types.h> 
+#include <arpa/inet.h> 
+#include <sys/socket.h> 
+#include<netinet/in.h> 
+
+#define PORT 5000 
+#define MAXLINE 1000 
+
+// Driver code 
+int main() 
+{ 
+
+	char buff[100]; 
+
+	int listenfd, len; 
+	struct sockaddr_in servaddr, cliaddr; 
+	bzero(&servaddr, sizeof(servaddr)); 
+
+	// Create a UDP Socket 
+	listenfd = socket(AF_INET, SOCK_DGRAM, 0);		 
+	servaddr.sin_addr.s_addr = htonl(INADDR_ANY); 
+	servaddr.sin_port = htons(PORT); 
+	servaddr.sin_family = AF_INET; 
+
+	// bind server address to socket descriptor 
+	bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr)); 
+	printf("Server Started\n Waiting for Client message...\n");
+	for(;;){
+		bzero(buff, 100); 
+		len = sizeof(cliaddr); 
+		int n = recvfrom(listenfd, buff, sizeof(buff),0, (struct sockaddr*)&cliaddr,&len); //receive message from server 
+		buff[n] = '\0'; 
+		printf("From client:%s\tTo client : ",buff);
+		
+
+		bzero(buff, 100); 
+        	n = 0; 
+        
+        	// copy server message in the buffer 
+        	while ((buff[n++] = getchar()) != '\n'); 
+	
+		// send the response 
+		sendto(listenfd, buff, MAXLINE, 0, (struct sockaddr*)&cliaddr, sizeof(cliaddr)); 
+		if (strncmp("exit", buff, 4) == 0) 
+		{ 
+            		printf("Server Exit...\n"); 
+            		break; 
+        	} 
+	}
+} 
