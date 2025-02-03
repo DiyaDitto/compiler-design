@@ -65,3 +65,13 @@ int main()
     // close the socket
     close(sockfd);
 }
+
+
+compilation--
+Socket successfully created..
+connected to the server..
+Enter the string : hi
+From Server : hello
+Enter the string : exit
+From Server : exit
+Client Exit... 
