@@ -1,0 +1,52 @@
+// sliding_window_server.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+#define PORT 8080
+#define MAX_BUFFER_SIZE 1024
+
+int main() {
+    int server_socket;
+    struct sockaddr_in server_addr, client_addr;
+    socklen_t addr_size;
+    char buffer[MAX_BUFFER_SIZE];
+
+    // Create UDP socket
+    server_socket = socket(AF_INET, SOCK_DGRAM, 0);
+    if (server_socket < 0) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Server address setup
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+
+    // Bind the socket to the address
+    if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Server is listening on port %d...\n", PORT);
+    addr_size = sizeof(client_addr);
+
+    while (1) {
+        // Receive a frame from the client
+        int n = recvfrom(server_socket, buffer, MAX_BUFFER_SIZE, 0, (struct sockaddr *)&client_addr, &addr_size);
+        buffer[n] = '\0'; // Null terminate the received string
+        printf("Received: %s\n", buffer);
+
+        // Send acknowledgment back to the client
+        char ack[] = "ACK";
+        sendto(server_socket, ack, strlen(ack), 0, (struct sockaddr *)&client_addr, addr_size);
+        printf("Sent ACK to client\n");
+    }
+
+    close(server_socket);
+    return 0;
+}
